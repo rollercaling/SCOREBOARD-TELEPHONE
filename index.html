@@ -326,10 +326,11 @@
 
 #controlPanel{
   display:none;
-  position:fixed;
+  position:absolute;
   left:50%;
-  bottom:20px;
+  bottom:100%;
   transform:translateX(-50%);
+  margin-bottom:12px;
   z-index:9999;
   gap:12px;
   background:rgba(20,20,20,0.92);
@@ -373,13 +374,14 @@
 </head>
 <body>
 
-<div id="controlPanel">
+
+
+  <div id="overlay">
+   <div id="controlPanel">
   <button id="btnA">+1 JOUEUR A</button>
   <button id="btnReset">RESET</button>
   <button id="btnB">+1 JOUEUR B</button>
 </div>
-	
-  <div id="overlay">
     <div id="boardColumn">
      <div id="fannyBadge">FANNY</div>
 
@@ -840,10 +842,9 @@ function addGoalB(){
     }
 
 function initControlPanel(){
-  const params = new URLSearchParams(window.location.search);
-  const controlMode = params.get("control") === "1";
+  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 
-  if(controlMode){
+  if(isMobile){
     controlPanelEl.classList.add("show");
   }
 
@@ -910,4 +911,3 @@ function initControlPanel(){
 
 </body>
 </html>
-
