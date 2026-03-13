@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scoreboard Baby-Foot</title>
+  <style>
+    :root{
+      --name-col-width: 270px;
+    }
+
+    body{
+      margin:0;
+      background:transparent;
+      font-family:Arial, sans-serif;
+      overflow:hidden;
+    }
+
+
+.set-score.fanny-win{
+  animation:fannyWin 0.8s ease;
+  background:rgba(255,255,255,0.5);
+}
+
+.set-score.fanny-lose{
+  animation:fannyLose 0.8s ease;
+  background:rgba(255,80,80,0.45);
+}
+
+@keyframes fannyWin{
+  0%{ transform:scale(1); }
+  35%{ transform:scale(1.18); }
+  100%{ transform:scale(1); }
+}
+
+@keyframes fannyLose{
+  0%{ transform:translateX(0); }
+  20%{ transform:translateX(-4px); }
+  40%{ transform:translateX(4px); }
+  60%{ transform:translateX(-3px); }
+  80%{ transform:translateX(3px); }
+  100%{ transform:translateX(0); }
+}
+
+#fannyBadge{
+  position:absolute;
+  top:-46px;
+  right:0;
+  background:#d94b4b;
+  color:white;
+  font-weight:900;
+  font-size:18px;
+  padding:8px 14px;
+  border-radius:8px;
+  opacity:0;
+  transform:translateY(-8px);
+  pointer-events:none;
+}
+
+#fannyBadge.show{
+  animation:showFannyBadge 1.6s ease forwards;
+}
+
+@keyframes showFannyBadge{
+  0%{
+    opacity:0;
+    transform:translateY(-8px);
+  }
+  15%{
+    opacity:1;
+    transform:translateY(0);
+  }
+  80%{
+    opacity:1;
+    transform:translateY(0);
+  }
+  100%{
+    opacity:0;
+    transform:translateY(-8px);
+  }
+}
+
+    #overlay{
+      position:absolute;
+      bottom:50px;
+      left:50%;
+      transform:translateX(-50%);
+      display:flex;
+      align-items:flex-end;
+    }
+
+    #boardColumn{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:8px;
+    }
+
+    #roundBadge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:10px;
+      height:60px;
+      padding:0 14px 0 10px;
+      background:#9a9a9a;
+      color:#111;
+      border-radius:6px;
+      font-size:16px;
+      font-weight:800;
+      letter-spacing:0.6px;
+      text-transform:uppercase;
+      box-shadow:0 4px 10px rgba(0,0,0,0.18);
+    }
+
+    #roundLogo{
+      height:60px;
+      width:auto;
+      display:block;
+      object-fit:contain;
+    }
+
+    #roundBadgeText{
+      display:inline-block;
+      line-height:1;
+    }
+
+
+#topRow{
+  display:flex;
+  align-items:flex-end;
+  gap:14px;
+  position:relative;
+  overflow:visible;
+}
+
+#specialPointBanner{
+  background:#bfbfbf;
+  color:#b22222;
+  font-size:16px;
+  font-weight:900;
+  letter-spacing:0.6px;
+  text-transform:uppercase;
+  padding:10px 16px;
+  border-radius:6px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+
+  opacity:0;
+  transform:translateY(28px);
+  pointer-events:none;
+}
+
+#specialPointBanner.show{
+  animation:specialBannerInOut 2.8s ease-in-out forwards;
+}
+
+#specialPointText{
+  display:block;
+  line-height:1;
+}
+
+@keyframes specialBannerInOut{
+  0%{
+    opacity:0;
+    transform:translateY(28px);
+  }
+  15%{
+    opacity:1;
+    transform:translateY(0);
+  }
+  80%{
+    opacity:1;
+    transform:translateY(0);
+  }
+  100%{
+    opacity:0;
+    transform:translateY(28px);
+  }
+}
+
+
+    #scoreboard{
+      background:#3f3f3f;
+      color:white;
+      border-radius:14px;
+      padding:10px 14px;
+      box-shadow:0 10px 28px rgba(0,0,0,0.30);
+      width:auto;
+      min-width:650px;
+      box-sizing:border-box;
+      display:inline-block;
+    }
+
+    #mainBoard{
+      display:flex;
+      flex-direction:column;
+    }
+
+    .player-row{
+      display:grid;
+      grid-template-columns: var(--name-col-width) 110px auto;
+      align-items:stretch;
+      min-height:62px;
+    }
+
+    .player-row.match-finished{
+      grid-template-columns: var(--name-col-width) auto;
+    }
+
+.player-row.match-finished .sets-history-row{
+  padding-left:20px;
+  margin-left:0;
+  border-left:3px solid #111;
+}
+
+.set-score.won{
+  background:rgba(255,255,255,0.40);
+}
+
+    .player-row + .player-row{
+      border-top:3px solid #111;
+      margin-top:2px;
+      padding-top:6px;
+    }
+
+    .player-name-wrap{
+      padding:0 14px 0 4px;
+      display:flex;
+      align-items:center;
+      min-height:56px;
+      box-sizing:border-box;
+    }
+
+    .player-name{
+      font-size:30px;
+      font-weight:800;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      width:100%;
+    }
+
+    .player-score-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:56px;
+      border-left:3px solid #111;
+      box-sizing:border-box;
+      width:110px;
+      flex:0 0 110px;
+    }
+
+    .player-row.match-finished .player-score-wrap{
+      display:none;
+    }
+
+    .player-score{
+      font-size:64px;
+      font-weight:900;
+      line-height:1;
+      text-align:center;
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:transform 0.18s ease, opacity 0.25s ease;
+    }
+
+    .player-score.flash{
+      transform:scale(1.18);
+      opacity:0.82;
+    }
+
+    .score-text-hidden{
+      opacity:0;
+    }
+
+    .sets-history-row{
+      display:grid;
+      gap:10px;
+      align-items:center;
+      justify-content:start;
+      padding-left:16px;
+      min-height:56px;
+      box-sizing:border-box;
+      transition:padding-left 0.25s ease;
+    }
+
+    .player-row.match-finished .sets-history-row{
+      padding-left:20px;
+    }
+
+    .set-score{
+      width:66px;
+      height:40px;
+      border-radius:6px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,0.14);
+      color:white;
+      font-size:30px;
+      font-weight:900;
+      line-height:1;
+      box-sizing:border-box;
+      opacity:1;
+      transform:translateX(0);
+    }
+
+    .set-score.new{
+      animation:appearSet 0.35s ease-out;
+    }
+
+    @keyframes appearSet{
+      0%{
+        opacity:0;
+        transform:translateX(-20px);
+      }
+      100%{
+        opacity:1;
+        transform:translateX(0);
+      }
+    }
+
+#controlPanel{
+  display:none;
+  position:fixed;
+  left:50%;
+  bottom:20px;
+  transform:translateX(-50%);
+  z-index:9999;
+  gap:12px;
+  background:rgba(20,20,20,0.92);
+  padding:14px;
+  border-radius:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.28);
+}
+
+#controlPanel.show{
+  display:flex;
+}
+
+#controlPanel button{
+  border:none;
+  border-radius:10px;
+  padding:16px 18px;
+  min-width:120px;
+  font-size:16px;
+  font-weight:800;
+  background:#d0d0d0;
+  color:#111;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+#controlPanel button:active{
+  transform:scale(0.97);
+}
+
+#btnA,
+#btnB{
+  background:#e2e2e2;
+}
+
+#btnReset{
+  background:#c94c4c;
+  color:white;
+}
+
+  </style>
+</head>
+<body>
+
+  <div id="overlay">
+    <div id="boardColumn">
+     <div id="fannyBadge">FANNY</div>
+
+<div id="topRow">
+
+      <div id="roundBadge">
+        <img id="roundLogo" src="Blason-Raptors-Blanc-Ville-1920x751.png" alt="Logo Raptors">
+        <span id="roundBadgeText">FINALE</span>
+      </div>
+
+   <div id="specialPointBanner">
+    <span id="specialPointText"></span>
+  </div>
+
+</div>
+
+      <div id="scoreboard">
+        <div id="mainBoard">
+          <div class="player-row">
+            <div class="player-name-wrap">
+              <div id="nameA" class="player-name">JOUEUR A</div>
+            </div>
+
+            <div class="player-score-wrap">
+              <div id="scoreA" class="player-score">0</div>
+            </div>
+
+            <div id="historyA" class="sets-history-row"></div>
+          </div>
+
+          <div class="player-row">
+            <div class="player-name-wrap">
+              <div id="nameB" class="player-name">JOUEUR B</div>
+            </div>
+
+            <div class="player-score-wrap">
+              <div id="scoreB" class="player-score">0</div>
+            </div>
+
+            <div id="historyB" class="sets-history-row"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const SCORE_MAX = 5;
+    const MANCHES_MAX = 5;
+    const MANCHES_POUR_GAGNER = 3;
+
+    let playerAName = "TOURMANTE.A";
+    let playerBName = "DROIT.T";
+    let roundLabel = "CDF INDIV - OPEN SIMPLE - FINAL";
+
+    let scoreA = 0;
+    let scoreB = 0;
+    let history = [];
+
+    const scoreAEl = document.getElementById("scoreA");
+    const scoreBEl = document.getElementById("scoreB");
+    const nameAEl = document.getElementById("nameA");
+    const nameBEl = document.getElementById("nameB");
+    const roundBadgeTextEl = document.getElementById("roundBadgeText");
+    const historyAEl = document.getElementById("historyA");
+    const historyBEl = document.getElementById("historyB");
+    const specialPointBannerEl = document.getElementById("specialPointBanner");
+    const specialPointTextEl = document.getElementById("specialPointText");
+
+
+const controlPanelEl = document.getElementById("controlPanel");
+const btnAEl = document.getElementById("btnA");
+const btnBEl = document.getElementById("btnB");
+const btnResetEl = document.getElementById("btnReset");
+
+    function initTexts(){
+      nameAEl.innerText = playerAName;
+      nameBEl.innerText = playerBName;
+      roundBadgeTextEl.innerText = roundLabel;
+    }
+
+    function getSetsWonA(){
+      return history.filter(set => set.a > set.b).length;
+    }
+
+    function getSetsWonB(){
+      return history.filter(set => set.b > set.a).length;
+    }
+
+    function isMatchFinished(){
+      return getSetsWonA() >= MANCHES_POUR_GAGNER || getSetsWonB() >= MANCHES_POUR_GAGNER;
+    }
+
+    function updateNameColumnWidth(){
+      const widthA = nameAEl.scrollWidth;
+      const widthB = nameBEl.scrollWidth;
+      const longest = Math.max(widthA, widthB);
+      const finalWidth = longest + 24;
+
+      document.documentElement.style.setProperty("--name-col-width", finalWidth + "px");
+    }
+
+
+const fannyBadgeEl = document.getElementById("fannyBadge");
+
+
+
+function showFannyBadge(){
+  if(!fannyBadgeEl) return;
+
+  fannyBadgeEl.classList.remove("show");
+  void fannyBadgeEl.offsetWidth;
+  fannyBadgeEl.classList.add("show");
+}
+
+function showSpecialPointBanner(text){
+  if(!specialPointBannerEl || !specialPointTextEl) return;
+
+  specialPointTextEl.innerText = text;
+
+  specialPointBannerEl.classList.remove("show");
+  void specialPointBannerEl.offsetWidth; // force reflow
+  specialPointBannerEl.classList.add("show");
+}
+
+
+    function updateScores(){
+      scoreAEl.innerText = scoreA;
+      scoreBEl.innerText = scoreB;
+      updateSpecialPointBadge();
+    }
+
+    function flashScore(element){
+      element.classList.add("flash");
+      setTimeout(() => {
+        element.classList.remove("flash");
+      }, 180);
+    }
+
+    function updateScoreVisibility(){
+      const scoreEls = document.querySelectorAll(".player-score");
+      const playerRows = document.querySelectorAll(".player-row");
+
+      if(isMatchFinished()){
+        scoreEls.forEach(el => {
+          el.classList.add("score-text-hidden");
+        });
+
+        playerRows.forEach(row => {
+          row.classList.add("match-finished");
+        });
+      } else {
+        scoreEls.forEach(el => {
+          el.classList.remove("score-text-hidden");
+        });
+
+        playerRows.forEach(row => {
+          row.classList.remove("match-finished");
+        });
+      }
+    }
+
+
+const specialPointBadgeEl = document.getElementById("specialPointBadge");
+
+let lastSpecialState = "";
+
+function updateSpecialPointBadge(){
+  if(!specialPointTextEl || !specialPointBannerEl) return;
+
+  let newState = "";
+
+  // priorité 1 : balle en or
+  if(isFinalSet() && scoreA === 7 && scoreB === 7 && !isMatchFinished()){
+    newState = "BALLE EN OR";
+  }
+
+  // priorité 2 : 2 points d'écart
+  else if(
+    isFinalSet() &&
+    scoreA >= 4 &&
+    scoreB >= 4 &&
+    !hasWonCurrentSet(scoreA, scoreB) &&
+    !hasWonCurrentSet(scoreB, scoreA)
+  ){
+    newState = "2 POINTS D'ÉCART";
+  }
+
+  // priorité 3 : balle de match joueur A
+  else if(isMatchPointA()){
+    newState = "BALLE DE MATCH";
+  }
+
+  // priorité 4 : balle de match joueur B
+  else if(isMatchPointB()){
+    newState = "BALLE DE MATCH";
+  }
+
+  // si match fini, on coupe tout
+  if(isMatchFinished()){
+    newState = "";
+  }
+
+  if(newState !== "" && newState !== lastSpecialState){
+    showSpecialPointBanner(newState);
+  }
+
+  lastSpecialState = newState;
+}
+function isFinalSet(){
+  return history.length === 4;
+}
+
+function isGoldenPoint(){
+  return isFinalSet() && scoreA === 7 && scoreB === 7 && !isMatchFinished();
+}
+
+function hasWonCurrentSet(playerScore, opponentScore){
+  // Manches 1 à 4 : premier à 5
+  if(!isFinalSet()){
+    return playerScore >= 5;
+  }
+
+  // 5e manche :
+  // avant 4-4, premier à 5 normalement
+  if(playerScore >= 5 && opponentScore <= 3){
+    return true; // ex : 5-0, 5-1, 5-2, 5-3
+  }
+
+  // à partir de 4-4, il faut 2 points d'écart
+  // sauf à 7-7 où le point suivant gagne
+  if(playerScore === 8 && opponentScore === 7){
+    return true; // balle en or gagnée
+  }
+
+  if(playerScore >= 6 && (playerScore - opponentScore) >= 2){
+    return true; // ex : 6-4, 7-5, 8-6
+  }
+
+  return false;
+}
+
+
+    function updateHistory(){
+      historyAEl.innerHTML = "";
+      historyBEl.innerHTML = "";
+
+      const setsWonA = getSetsWonA();
+      const setsWonB = getSetsWonB();
+
+      let displayedSets = history.length;
+
+      if(history.length === 0){
+        displayedSets = 0;
+      }
+
+      if(setsWonA >= MANCHES_POUR_GAGNER || setsWonB >= MANCHES_POUR_GAGNER){
+        displayedSets = setsWonA + setsWonB;
+      }
+
+      if(displayedSets > 0){
+        historyAEl.style.gridTemplateColumns = `repeat(${displayedSets}, 66px)`;
+        historyBEl.style.gridTemplateColumns = `repeat(${displayedSets}, 66px)`;
+      } else {
+        historyAEl.style.gridTemplateColumns = "none";
+        historyBEl.style.gridTemplateColumns = "none";
+      }
+
+      for(let i = 0; i < displayedSets; i++){
+        const set = history[i];
+
+        const cellA = document.createElement("div");
+        const cellB = document.createElement("div");
+
+        cellA.className = "set-score";
+        cellB.className = "set-score";
+
+        cellA.innerText = set ? set.a : "";
+        cellB.innerText = set ? set.b : "";
+		
+		if(set){
+    if(set.a > set.b){
+      cellA.classList.add("won");
+    } else if(set.b > set.a){
+      cellB.classList.add("won");
+    }
+  }
+
+ // Cas FANNY / manche blanche
+    if(set.a === 5 && set.b === 0){
+      cellA.classList.add("fanny-win");
+      cellB.classList.add("fanny-lose");
+
+      if(i === history.length - 1){
+        showFannyBadge();
+      }
+    }
+
+    if(set.b === 5 && set.a === 0){
+      cellB.classList.add("fanny-win");
+      cellA.classList.add("fanny-lose");
+
+      if(i === history.length - 1){
+        showFannyBadge();
+      }
+    }
+
+        if(i === history.length - 1 && set){
+          cellA.classList.add("new");
+          cellB.classList.add("new");
+        }
+
+        historyAEl.appendChild(cellA);
+        historyBEl.appendChild(cellB);
+      }
+
+      updateScoreVisibility();
+    }
+
+    function resetScoresOnly(){
+      scoreA = 0;
+      scoreB = 0;
+      updateScores();
+      lastSpecialState = "";
+    }
+
+    function resetMatch(){
+      scoreA = 0;
+      scoreB = 0;
+      history = [];
+      lastSpecialState = "";
+
+      updateScores();
+      updateHistory();
+      updateScoreVisibility();
+      
+    }
+
+    function recordCurrentSet(){
+      if(history.length >= MANCHES_MAX) return;
+
+      history.push({
+        a: scoreA,
+        b: scoreB
+      });
+
+      updateHistory();
+    }
+
+    function finishMatch(){
+      updateHistory();
+      updateScoreVisibility();
+    }
+
+    function winSetA(){
+      recordCurrentSet();
+
+      if(isMatchFinished()){
+        finishMatch();
+      } else {
+        setTimeout(() => {
+          resetScoresOnly();
+          updateScoreVisibility();
+        }, 350);
+      }
+    }
+
+function isMatchPointA(){
+  return getSetsWonA() === 2 && scoreA === 4 && !isMatchFinished();
+}
+
+function isMatchPointB(){
+  return getSetsWonB() === 2 && scoreB === 4 && !isMatchFinished();
+}
+
+
+    function winSetB(){
+      recordCurrentSet();
+
+      if(isMatchFinished()){
+        finishMatch();
+      } else {
+        setTimeout(() => {
+          resetScoresOnly();
+          updateScoreVisibility();
+        }, 350);
+      }
+    }
+
+function addGoalA(){
+  if(isMatchFinished()) return;
+
+  // limite max réaliste de la belle
+  if(isFinalSet() && scoreA >= 8) return;
+  if(!isFinalSet() && scoreA >= 5) return;
+
+  scoreA++;
+  updateScores();
+  flashScore(scoreAEl);
+
+  if(hasWonCurrentSet(scoreA, scoreB)){
+    winSetA();
+  }
+}
+
+function addGoalB(){
+  if(isMatchFinished()) return;
+
+  if(isFinalSet() && scoreB >= 8) return;
+  if(!isFinalSet() && scoreB >= 5) return;
+
+  scoreB++;
+  updateScores();
+  flashScore(scoreBEl);
+
+  if(hasWonCurrentSet(scoreB, scoreA)){
+    winSetB();
+  }
+}
+
+    function removeGoalA(){
+      if(isMatchFinished()) return;
+
+      if(scoreA > 0){
+        scoreA--;
+        updateScores();
+      }
+    }
+
+    function removeGoalB(){
+      if(isMatchFinished()) return;
+
+      if(scoreB > 0){
+        scoreB--;
+        updateScores();
+      }
+    }
+
+    function addSetManual(){
+      if(isMatchFinished()) return;
+      if(history.length >= MANCHES_MAX) return;
+
+      recordCurrentSet();
+      resetScoresOnly();
+    }
+
+    function undoLastSet(){
+      if(history.length === 0) return;
+
+      const lastSet = history.pop();
+      scoreA = lastSet.a;
+      scoreB = lastSet.b;
+
+      updateScores();
+      updateHistory();
+      updateScoreVisibility();
+    }
+
+function initControlPanel(){
+  const params = new URLSearchParams(window.location.search);
+  const controlMode = params.get("control") === "1";
+
+  if(controlMode){
+    controlPanelEl.classList.add("show");
+  }
+
+  btnAEl.addEventListener("click", () => {
+    addGoalA();
+  });
+
+  btnBEl.addEventListener("click", () => {
+    addGoalB();
+  });
+
+  btnResetEl.addEventListener("click", () => {
+    resetMatch();
+  });
+}
+
+    document.addEventListener("keydown", function(e){
+      const key = e.key.toLowerCase();
+
+      if(key === "a") addGoalA();
+      if(key === "l") addGoalB();
+      if(key === "q") removeGoalA();
+      if(key === "m") removeGoalB();
+      if(key === "s") addSetManual();
+      if(key === "t") resetScoresOnly();
+      if(key === "r") resetMatch();
+      if(key === "u") undoLastSet();
+
+      if(key === "1"){
+        const newName = prompt("Nom du joueur A", nameAEl.innerText);
+        if(newName){
+          playerAName = newName;
+          nameAEl.innerText = newName;
+          updateNameColumnWidth();
+        }
+      }
+
+      if(key === "2"){
+        const newName = prompt("Nom du joueur B", nameBEl.innerText);
+        if(newName){
+          playerBName = newName;
+          nameBEl.innerText = newName;
+          updateNameColumnWidth();
+        }
+      }
+
+      if(key === "3"){
+        const newRound = prompt("Tour du match", roundBadgeTextEl.innerText);
+        if(newRound){
+          roundLabel = newRound;
+          roundBadgeTextEl.innerText = newRound;
+        }
+      }
+    });
+
+    initTexts();
+    updateNameColumnWidth();
+    updateScores();
+    updateHistory();
+    updateScoreVisibility();
+    initControlPanel();
+  </script>
+
+<div id="controlPanel">
+  <button id="btnA">+1 JOUEUR A</button>
+  <button id="btnReset">RESET</button>
+  <button id="btnB">+1 JOUEUR B</button>
+</div>
+
+
+</body>
+</html>
