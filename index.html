@@ -1,913 +1,370 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Scoreboard Baby-Foot</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pub Club | Les Raptors de l'Atlantique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --name-col-width: 270px;
+    :root {
+      --red: #ef1818;
+      --red-dark: #5a060b;
+      --ink: #07080d;
+      --steel: #cfd2dc;
+      --white: #f8f9fd;
+      --muted: rgba(248, 249, 253, 0.72);
     }
 
-    body{
-      margin:0;
-      background:transparent;
-      font-family:Arial, sans-serif;
-      overflow:hidden;
+    * {
+      box-sizing: border-box;
     }
 
-
-.set-score.fanny-win{
-  animation:fannyWin 0.8s ease;
-  background:rgba(255,255,255,0.5);
-}
-
-.set-score.fanny-lose{
-  animation:fannyLose 0.8s ease;
-  background:rgba(255,80,80,0.45);
-}
-
-@keyframes fannyWin{
-  0%{ transform:scale(1); }
-  35%{ transform:scale(1.18); }
-  100%{ transform:scale(1); }
-}
-
-@keyframes fannyLose{
-  0%{ transform:translateX(0); }
-  20%{ transform:translateX(-4px); }
-  40%{ transform:translateX(4px); }
-  60%{ transform:translateX(-3px); }
-  80%{ transform:translateX(3px); }
-  100%{ transform:translateX(0); }
-}
-
-#fannyBadge{
-  position:absolute;
-  top:-46px;
-  right:0;
-  background:#d94b4b;
-  color:white;
-  font-weight:900;
-  font-size:18px;
-  padding:8px 14px;
-  border-radius:8px;
-  opacity:0;
-  transform:translateY(-8px);
-  pointer-events:none;
-}
-
-#fannyBadge.show{
-  animation:showFannyBadge 1.6s ease forwards;
-}
-
-@keyframes showFannyBadge{
-  0%{
-    opacity:0;
-    transform:translateY(-8px);
-  }
-  15%{
-    opacity:1;
-    transform:translateY(0);
-  }
-  80%{
-    opacity:1;
-    transform:translateY(0);
-  }
-  100%{
-    opacity:0;
-    transform:translateY(-8px);
-  }
-}
-
-    #overlay{
-      position:absolute;
-      bottom:50px;
-      left:50%;
-      transform:translateX(-50%);
-      display:flex;
-      align-items:flex-end;
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #020204;
+      color: var(--white);
+      font-family: "Rajdhani", sans-serif;
     }
 
-    #boardColumn{
-      display:flex;
-      flex-direction:column;
-      align-items:flex-start;
-      gap:8px;
+    .club-scene {
+      position: relative;
+      width: min(100vw, 177.7778vh);
+      aspect-ratio: 16 / 9;
+      margin: auto;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 28% 42%, rgba(239, 24, 24, 0.18), transparent 28%),
+        radial-gradient(circle at 78% 18%, rgba(255, 255, 255, 0.16), transparent 24%),
+        linear-gradient(125deg, #08090e 0%, #343844 52%, #090a0f 100%);
     }
 
-    #roundBadge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:flex-start;
-      gap:10px;
-      height:60px;
-      padding:0 14px 0 10px;
-      background:#9a9a9a;
-      color:#111;
-      border-radius:6px;
-      font-size:16px;
-      font-weight:800;
-      letter-spacing:0.6px;
-      text-transform:uppercase;
-      box-shadow:0 4px 10px rgba(0,0,0,0.18);
+    .club-scene::before,
+    .club-scene::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
     }
 
-    #roundLogo{
-      height:60px;
-      width:auto;
-      display:block;
-      object-fit:contain;
+    .club-scene::before {
+      inset: 0;
+      background:
+        linear-gradient(118deg, transparent 0 16%, rgba(255, 255, 255, 0.1) 16.2%, transparent 16.7%),
+        linear-gradient(120deg, transparent 0 67%, rgba(239, 24, 24, 0.34) 67.2%, transparent 68%),
+        radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 1.8px);
+      background-size: auto, auto, 18px 18px;
+      opacity: 0.86;
     }
 
-    #roundBadgeText{
-      display:inline-block;
-      line-height:1;
+    .club-scene::after {
+      left: -12%;
+      right: -12%;
+      bottom: 5.7%;
+      height: 0.8rem;
+      background: linear-gradient(90deg, transparent, var(--red), #fff, var(--red), transparent);
+      transform: rotate(-3deg);
+      filter: drop-shadow(0 0 22px rgba(239, 24, 24, 0.72));
+      opacity: 0.86;
     }
 
-
-#topRow{
-  display:flex;
-  align-items:flex-end;
-  gap:14px;
-  position:relative;
-  overflow:visible;
-}
-
-#specialPointBanner{
-  background:#bfbfbf;
-  color:#b22222;
-  font-size:16px;
-  font-weight:900;
-  letter-spacing:0.6px;
-  text-transform:uppercase;
-  padding:10px 16px;
-  border-radius:6px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.15);
-
-  opacity:0;
-  transform:translateY(28px);
-  pointer-events:none;
-}
-
-#specialPointBanner.show{
-  animation:specialBannerInOut 2.8s ease-in-out forwards;
-}
-
-#specialPointText{
-  display:block;
-  line-height:1;
-}
-
-@keyframes specialBannerInOut{
-  0%{
-    opacity:0;
-    transform:translateY(28px);
-  }
-  15%{
-    opacity:1;
-    transform:translateY(0);
-  }
-  80%{
-    opacity:1;
-    transform:translateY(0);
-  }
-  100%{
-    opacity:0;
-    transform:translateY(28px);
-  }
-}
-
-
-    #scoreboard{
-      background:#3f3f3f;
-      color:white;
-      border-radius:14px;
-      padding:10px 14px;
-      box-shadow:0 10px 28px rgba(0,0,0,0.30);
-      width:auto;
-      min-width:650px;
-      box-sizing:border-box;
-      display:inline-block;
+    .layout {
+      position: absolute;
+      inset: 3.4rem 4rem;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 3.5rem;
+      align-items: center;
     }
 
-    #mainBoard{
-      display:flex;
-      flex-direction:column;
+    .hero {
+      position: relative;
+      min-height: 48rem;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
     }
 
-    .player-row{
-      display:grid;
-      grid-template-columns: var(--name-col-width) 110px auto;
-      align-items:stretch;
-      min-height:62px;
+    .logo-orbit {
+      position: absolute;
+      width: 42rem;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, transparent 56%, rgba(255, 255, 255, 0.16) 56.4%, transparent 57%),
+        conic-gradient(from -20deg, transparent, rgba(239, 24, 24, 0.75), transparent 38%, rgba(255, 255, 255, 0.34), transparent 72%);
+      filter: drop-shadow(0 0 2rem rgba(239, 24, 24, 0.28));
+      animation: orbitSpin 18s linear infinite;
     }
 
-    .player-row.match-finished{
-      grid-template-columns: var(--name-col-width) auto;
+    .club-logo {
+      position: relative;
+      width: min(34rem, 90%);
+      filter:
+        drop-shadow(0 1.4rem 2.2rem rgba(0, 0, 0, 0.54))
+        drop-shadow(0 0 2rem rgba(255, 255, 255, 0.14));
+      animation: logoReveal 1.2s cubic-bezier(.2,.9,.2,1) both;
     }
 
-.player-row.match-finished .sets-history-row{
-  padding-left:20px;
-  margin-left:0;
-  border-left:3px solid #111;
-}
-
-.set-score.won{
-  background:rgba(255,255,255,0.40);
-}
-
-    .player-row + .player-row{
-      border-top:3px solid #111;
-      margin-top:2px;
-      padding-top:6px;
+    .content {
+      min-width: 0;
+      display: grid;
+      gap: 1.45rem;
+      animation: contentReveal 0.9s ease 0.28s both;
     }
 
-    .player-name-wrap{
-      padding:0 14px 0 4px;
-      display:flex;
-      align-items:center;
-      min-height:56px;
-      box-sizing:border-box;
+    .eyebrow {
+      width: max-content;
+      padding: 0.5rem 1.1rem;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent),
+        rgba(0, 0, 0, 0.32);
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
     }
 
-    .player-name{
-      font-size:30px;
-      font-weight:800;
-      letter-spacing:1px;
-      text-transform:uppercase;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      width:100%;
+    h1 {
+      margin: 0;
+      font-family: "Orbitron", sans-serif;
+      font-size: 4.8rem;
+      line-height: 0.96;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-shadow: 0 0.35rem 1rem rgba(0, 0, 0, 0.62);
     }
 
-    .player-score-wrap{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:56px;
-      border-left:3px solid #111;
-      box-sizing:border-box;
-      width:110px;
-      flex:0 0 110px;
+    .tagline {
+      margin: 0;
+      width: max-content;
+      padding: 0.55rem 1.25rem;
+      clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 40%),
+        linear-gradient(90deg, #050507, #2b1114, #101116);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #fff;
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
     }
 
-    .player-row.match-finished .player-score-wrap{
-      display:none;
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 0.3rem;
     }
 
-    .player-score{
-      font-size:64px;
-      font-weight:900;
-      line-height:1;
-      text-align:center;
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      transition:transform 0.18s ease, opacity 0.25s ease;
+    .info-card {
+      min-height: 8.4rem;
+      padding: 1.15rem 1.25rem;
+      border: 1px solid rgba(207, 210, 220, 0.44);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 24%),
+        linear-gradient(180deg, rgba(15, 16, 22, 0.92), rgba(5, 5, 8, 0.96));
+      box-shadow:
+        0 1rem 1.65rem rgba(0, 0, 0, 0.28),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.72);
     }
 
-    .player-score.flash{
-      transform:scale(1.18);
-      opacity:0.82;
+    .info-card strong {
+      display: block;
+      margin-bottom: 0.45rem;
+      color: #fff;
+      font-size: 1.25rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    .score-text-hidden{
-      opacity:0;
+    .info-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.16;
     }
 
-    .sets-history-row{
-      display:grid;
-      gap:10px;
-      align-items:center;
-      justify-content:start;
-      padding-left:16px;
-      min-height:56px;
-      box-sizing:border-box;
-      transition:padding-left 0.25s ease;
+    .info-card-wide {
+      grid-column: 1 / -1;
+      min-height: 6.8rem;
     }
 
-    .player-row.match-finished .sets-history-row{
-      padding-left:20px;
+    .socials {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+      margin-top: 0.2rem;
     }
 
-    .set-score{
-      width:66px;
-      height:40px;
-      border-radius:6px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:rgba(255,255,255,0.14);
-      color:white;
-      font-size:30px;
-      font-weight:900;
-      line-height:1;
-      box-sizing:border-box;
-      opacity:1;
-      transform:translateX(0);
+    .social {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 0.8rem;
+      min-height: 4.6rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 42%),
+        rgba(0, 0, 0, 0.32);
     }
 
-    .set-score.new{
-      animation:appearSet 0.35s ease-out;
+    .social-mark {
+      display: grid;
+      place-items: center;
+      width: 2.7rem;
+      height: 2.7rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff3838, #62070c);
+      color: #fff;
+      font-family: "Orbitron", sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      box-shadow: 0 0 1rem rgba(239, 24, 24, 0.44);
     }
 
-    @keyframes appearSet{
-      0%{
-        opacity:0;
-        transform:translateX(-20px);
+    .social b {
+      display: block;
+      color: #fff;
+      font-size: 1.08rem;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .social span {
+      display: block;
+      margin-top: 0.18rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bottom-band {
+      position: absolute;
+      left: 4rem;
+      right: 4rem;
+      bottom: 2.3rem;
+      z-index: 2;
+      min-height: 3.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      padding: 0.45rem 1.6rem;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(210, 213, 223, 0.82));
+      color: #15161c;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .bottom-band span {
+      font-size: 1.12rem;
+    }
+
+    @keyframes orbitSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes logoReveal {
+      from {
+        opacity: 0;
+        transform: scale(0.88) rotate(-6deg);
+        filter: blur(0.6rem) drop-shadow(0 0 0 transparent);
       }
-      100%{
-        opacity:1;
-        transform:translateX(0);
+      to {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
       }
     }
 
-#controlPanel{
-  display:none;
-  position:absolute;
-  left:50%;
-  bottom:100%;
-  transform:translateX(-50%);
-  margin-bottom:12px;
-  z-index:9999;
-  gap:12px;
-  background:rgba(20,20,20,0.92);
-  padding:14px;
-  border-radius:12px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.28);
-}
-
-#controlPanel.show{
-  display:flex;
-}
-
-#controlPanel button{
-  border:none;
-  border-radius:10px;
-  padding:16px 18px;
-  min-width:120px;
-  font-size:16px;
-  font-weight:800;
-  background:#d0d0d0;
-  color:#111;
-  cursor:pointer;
-  touch-action:manipulation;
-}
-
-#controlPanel button:active{
-  transform:scale(0.97);
-}
-
-#btnA,
-#btnB{
-  background:#e2e2e2;
-}
-
-#btnReset{
-  background:#c94c4c;
-  color:white;
-}
-
+    @keyframes contentReveal {
+      from {
+        opacity: 0;
+        transform: translateX(2rem);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
   </style>
 </head>
 <body>
-
-
-
-  <div id="overlay">
-   <div id="controlPanel">
-  <button id="btnA">+1 JOUEUR A</button>
-  <button id="btnReset">RESET</button>
-  <button id="btnB">+1 JOUEUR B</button>
-</div>
-    <div id="boardColumn">
-     <div id="fannyBadge">FANNY</div>
-
-<div id="topRow">
-
-      <div id="roundBadge">
-        <img id="roundLogo" src="Blason-Raptors-Blanc-Ville-1920x751.png" alt="Logo Raptors">
-        <span id="roundBadgeText">FINALE</span>
+  <main class="club-scene">
+    <section class="layout">
+      <div class="hero">
+        <div class="logo-orbit" aria-hidden="true"></div>
+        <img class="club-logo" src="../AVANT MATCH/AUTOMATISATION HTML/LOGO CLUB BLANC.png" alt="Logo Les Raptors de l'Atlantique">
       </div>
 
-   <div id="specialPointBanner">
-    <span id="specialPointText"></span>
-  </div>
+      <section class="content">
+        <div class="eyebrow">Baby-foot club</div>
+        <h1>Les Raptors<br>de l'Atlantique</h1>
+        <p class="tagline">Ensemble, plus fort.</p>
 
-</div>
+        <div class="info-grid">
+          <article class="info-card info-card-wide">
+            <strong>Entrainements</strong>
+            <span>1 All. des Favrieres, 44240 La Chapelle-sur-Erdre</span>
+          </article>
 
-      <div id="scoreboard">
-        <div id="mainBoard">
-          <div class="player-row">
-            <div class="player-name-wrap">
-              <div id="nameA" class="player-name">JOUEUR A</div>
-            </div>
+          <article class="info-card">
+            <strong>Horaires</strong>
+            <span>Lundi 18h30 - 22h45<br>Vendredi 18h30 - 22h45</span>
+          </article>
 
-            <div class="player-score-wrap">
-              <div id="scoreA" class="player-score">0</div>
-            </div>
+          <article class="info-card">
+            <strong>Tables</strong>
+            <span>8 Bonzini B90 ITSF mises a disposition des joueurs</span>
+          </article>
+        </div>
 
-            <div id="historyA" class="sets-history-row"></div>
+        <div class="socials" aria-label="Reseaux du club">
+          <div class="social">
+            <div class="social-mark">FB</div>
+            <div><b>Facebook</b><span>RaptorsAtlantique</span></div>
           </div>
-
-          <div class="player-row">
-            <div class="player-name-wrap">
-              <div id="nameB" class="player-name">JOUEUR B</div>
-            </div>
-
-            <div class="player-score-wrap">
-              <div id="scoreB" class="player-score">0</div>
-            </div>
-
-            <div id="historyB" class="sets-history-row"></div>
+          <div class="social">
+            <div class="social-mark">IG</div>
+            <div><b>Instagram</b><span>@baby.footclublesraptors</span></div>
+          </div>
+          <div class="social">
+            <div class="social-mark">YT</div>
+            <div><b>YouTube</b><span>@lesraptorsdelatlantique</span></div>
+          </div>
+          <div class="social">
+            <div class="social-mark">WEB</div>
+            <div><b>Site web</b><span>babyfoot-raptors.fr</span></div>
           </div>
         </div>
-      </div>
-
-    </div>
-  </div>
-
-  <script>
-    const SCORE_MAX = 5;
-    const MANCHES_MAX = 5;
-    const MANCHES_POUR_GAGNER = 3;
-
-    let playerAName = "TOURMANTE.A";
-    let playerBName = "DROIT.T";
-    let roundLabel = "CDF INDIV - OPEN SIMPLE - FINAL";
-
-    let scoreA = 0;
-    let scoreB = 0;
-    let history = [];
-
-    const scoreAEl = document.getElementById("scoreA");
-    const scoreBEl = document.getElementById("scoreB");
-    const nameAEl = document.getElementById("nameA");
-    const nameBEl = document.getElementById("nameB");
-    const roundBadgeTextEl = document.getElementById("roundBadgeText");
-    const historyAEl = document.getElementById("historyA");
-    const historyBEl = document.getElementById("historyB");
-    const specialPointBannerEl = document.getElementById("specialPointBanner");
-    const specialPointTextEl = document.getElementById("specialPointText");
-
-
-const controlPanelEl = document.getElementById("controlPanel");
-const btnAEl = document.getElementById("btnA");
-const btnBEl = document.getElementById("btnB");
-const btnResetEl = document.getElementById("btnReset");
-
-    function initTexts(){
-      nameAEl.innerText = playerAName;
-      nameBEl.innerText = playerBName;
-      roundBadgeTextEl.innerText = roundLabel;
-    }
-
-    function getSetsWonA(){
-      return history.filter(set => set.a > set.b).length;
-    }
-
-    function getSetsWonB(){
-      return history.filter(set => set.b > set.a).length;
-    }
-
-    function isMatchFinished(){
-      return getSetsWonA() >= MANCHES_POUR_GAGNER || getSetsWonB() >= MANCHES_POUR_GAGNER;
-    }
-
-    function updateNameColumnWidth(){
-      const widthA = nameAEl.scrollWidth;
-      const widthB = nameBEl.scrollWidth;
-      const longest = Math.max(widthA, widthB);
-      const finalWidth = longest + 24;
-
-      document.documentElement.style.setProperty("--name-col-width", finalWidth + "px");
-    }
-
-
-const fannyBadgeEl = document.getElementById("fannyBadge");
-
-
-
-function showFannyBadge(){
-  if(!fannyBadgeEl) return;
-
-  fannyBadgeEl.classList.remove("show");
-  void fannyBadgeEl.offsetWidth;
-  fannyBadgeEl.classList.add("show");
-}
-
-function showSpecialPointBanner(text){
-  if(!specialPointBannerEl || !specialPointTextEl) return;
-
-  specialPointTextEl.innerText = text;
-
-  specialPointBannerEl.classList.remove("show");
-  void specialPointBannerEl.offsetWidth; // force reflow
-  specialPointBannerEl.classList.add("show");
-}
-
-
-    function updateScores(){
-      scoreAEl.innerText = scoreA;
-      scoreBEl.innerText = scoreB;
-      updateSpecialPointBadge();
-    }
-
-    function flashScore(element){
-      element.classList.add("flash");
-      setTimeout(() => {
-        element.classList.remove("flash");
-      }, 180);
-    }
-
-    function updateScoreVisibility(){
-      const scoreEls = document.querySelectorAll(".player-score");
-      const playerRows = document.querySelectorAll(".player-row");
-
-      if(isMatchFinished()){
-        scoreEls.forEach(el => {
-          el.classList.add("score-text-hidden");
-        });
-
-        playerRows.forEach(row => {
-          row.classList.add("match-finished");
-        });
-      } else {
-        scoreEls.forEach(el => {
-          el.classList.remove("score-text-hidden");
-        });
-
-        playerRows.forEach(row => {
-          row.classList.remove("match-finished");
-        });
-      }
-    }
-
-
-const specialPointBadgeEl = document.getElementById("specialPointBadge");
-
-let lastSpecialState = "";
-
-function updateSpecialPointBadge(){
-  if(!specialPointTextEl || !specialPointBannerEl) return;
-
-  let newState = "";
-
-  // priorité 1 : balle en or
-  if(isFinalSet() && scoreA === 7 && scoreB === 7 && !isMatchFinished()){
-    newState = "BALLE EN OR";
-  }
-
-  // priorité 2 : 2 points d'écart
-  else if(
-    isFinalSet() &&
-    scoreA >= 4 &&
-    scoreB >= 4 &&
-    !hasWonCurrentSet(scoreA, scoreB) &&
-    !hasWonCurrentSet(scoreB, scoreA)
-  ){
-    newState = "2 POINTS D'ÉCART";
-  }
-
-  // priorité 3 : balle de match joueur A
-  else if(isMatchPointA()){
-    newState = "BALLE DE MATCH";
-  }
-
-  // priorité 4 : balle de match joueur B
-  else if(isMatchPointB()){
-    newState = "BALLE DE MATCH";
-  }
-
-  // si match fini, on coupe tout
-  if(isMatchFinished()){
-    newState = "";
-  }
-
-  if(newState !== "" && newState !== lastSpecialState){
-    showSpecialPointBanner(newState);
-  }
-
-  lastSpecialState = newState;
-}
-function isFinalSet(){
-  return history.length === 4;
-}
-
-function isGoldenPoint(){
-  return isFinalSet() && scoreA === 7 && scoreB === 7 && !isMatchFinished();
-}
-
-function hasWonCurrentSet(playerScore, opponentScore){
-  // Manches 1 à 4 : premier à 5
-  if(!isFinalSet()){
-    return playerScore >= 5;
-  }
-
-  // 5e manche :
-  // avant 4-4, premier à 5 normalement
-  if(playerScore >= 5 && opponentScore <= 3){
-    return true; // ex : 5-0, 5-1, 5-2, 5-3
-  }
-
-  // à partir de 4-4, il faut 2 points d'écart
-  // sauf à 7-7 où le point suivant gagne
-  if(playerScore === 8 && opponentScore === 7){
-    return true; // balle en or gagnée
-  }
-
-  if(playerScore >= 6 && (playerScore - opponentScore) >= 2){
-    return true; // ex : 6-4, 7-5, 8-6
-  }
-
-  return false;
-}
-
-
-    function updateHistory(){
-      historyAEl.innerHTML = "";
-      historyBEl.innerHTML = "";
-
-      const setsWonA = getSetsWonA();
-      const setsWonB = getSetsWonB();
-
-      let displayedSets = history.length;
-
-      if(history.length === 0){
-        displayedSets = 0;
-      }
-
-      if(setsWonA >= MANCHES_POUR_GAGNER || setsWonB >= MANCHES_POUR_GAGNER){
-        displayedSets = setsWonA + setsWonB;
-      }
-
-      if(displayedSets > 0){
-        historyAEl.style.gridTemplateColumns = `repeat(${displayedSets}, 66px)`;
-        historyBEl.style.gridTemplateColumns = `repeat(${displayedSets}, 66px)`;
-      } else {
-        historyAEl.style.gridTemplateColumns = "none";
-        historyBEl.style.gridTemplateColumns = "none";
-      }
-
-      for(let i = 0; i < displayedSets; i++){
-        const set = history[i];
-
-        const cellA = document.createElement("div");
-        const cellB = document.createElement("div");
-
-        cellA.className = "set-score";
-        cellB.className = "set-score";
-
-        cellA.innerText = set ? set.a : "";
-        cellB.innerText = set ? set.b : "";
-		
-		if(set){
-    if(set.a > set.b){
-      cellA.classList.add("won");
-    } else if(set.b > set.a){
-      cellB.classList.add("won");
-    }
-  }
-
- // Cas FANNY / manche blanche
-    if(set.a === 5 && set.b === 0){
-      cellA.classList.add("fanny-win");
-      cellB.classList.add("fanny-lose");
-
-      if(i === history.length - 1){
-        showFannyBadge();
-      }
-    }
-
-    if(set.b === 5 && set.a === 0){
-      cellB.classList.add("fanny-win");
-      cellA.classList.add("fanny-lose");
-
-      if(i === history.length - 1){
-        showFannyBadge();
-      }
-    }
-
-        if(i === history.length - 1 && set){
-          cellA.classList.add("new");
-          cellB.classList.add("new");
-        }
-
-        historyAEl.appendChild(cellA);
-        historyBEl.appendChild(cellB);
-      }
-
-      updateScoreVisibility();
-    }
-
-    function resetScoresOnly(){
-      scoreA = 0;
-      scoreB = 0;
-      updateScores();
-      lastSpecialState = "";
-    }
-
-    function resetMatch(){
-      scoreA = 0;
-      scoreB = 0;
-      history = [];
-      lastSpecialState = "";
-
-      updateScores();
-      updateHistory();
-      updateScoreVisibility();
-      
-    }
-
-    function recordCurrentSet(){
-      if(history.length >= MANCHES_MAX) return;
-
-      history.push({
-        a: scoreA,
-        b: scoreB
-      });
-
-      updateHistory();
-    }
-
-    function finishMatch(){
-      updateHistory();
-      updateScoreVisibility();
-    }
-
-    function winSetA(){
-      recordCurrentSet();
-
-      if(isMatchFinished()){
-        finishMatch();
-      } else {
-        setTimeout(() => {
-          resetScoresOnly();
-          updateScoreVisibility();
-        }, 350);
-      }
-    }
-
-function isMatchPointA(){
-  return getSetsWonA() === 2 && scoreA === 4 && !isMatchFinished();
-}
-
-function isMatchPointB(){
-  return getSetsWonB() === 2 && scoreB === 4 && !isMatchFinished();
-}
-
-
-    function winSetB(){
-      recordCurrentSet();
-
-      if(isMatchFinished()){
-        finishMatch();
-      } else {
-        setTimeout(() => {
-          resetScoresOnly();
-          updateScoreVisibility();
-        }, 350);
-      }
-    }
-
-function addGoalA(){
-  if(isMatchFinished()) return;
-
-  // limite max réaliste de la belle
-  if(isFinalSet() && scoreA >= 8) return;
-  if(!isFinalSet() && scoreA >= 5) return;
-
-  scoreA++;
-  updateScores();
-  flashScore(scoreAEl);
-
-  if(hasWonCurrentSet(scoreA, scoreB)){
-    winSetA();
-  }
-}
-
-function addGoalB(){
-  if(isMatchFinished()) return;
-
-  if(isFinalSet() && scoreB >= 8) return;
-  if(!isFinalSet() && scoreB >= 5) return;
-
-  scoreB++;
-  updateScores();
-  flashScore(scoreBEl);
-
-  if(hasWonCurrentSet(scoreB, scoreA)){
-    winSetB();
-  }
-}
-
-    function removeGoalA(){
-      if(isMatchFinished()) return;
-
-      if(scoreA > 0){
-        scoreA--;
-        updateScores();
-      }
-    }
-
-    function removeGoalB(){
-      if(isMatchFinished()) return;
-
-      if(scoreB > 0){
-        scoreB--;
-        updateScores();
-      }
-    }
-
-    function addSetManual(){
-      if(isMatchFinished()) return;
-      if(history.length >= MANCHES_MAX) return;
-
-      recordCurrentSet();
-      resetScoresOnly();
-    }
-
-    function undoLastSet(){
-      if(history.length === 0) return;
-
-      const lastSet = history.pop();
-      scoreA = lastSet.a;
-      scoreB = lastSet.b;
-
-      updateScores();
-      updateHistory();
-      updateScoreVisibility();
-    }
-
-function initControlPanel(){
-  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
-
-  if(isMobile){
-    controlPanelEl.classList.add("show");
-  }
-
-  btnAEl.addEventListener("click", () => {
-    addGoalA();
-  });
-
-  btnBEl.addEventListener("click", () => {
-    addGoalB();
-  });
-
-  btnResetEl.addEventListener("click", () => {
-    resetMatch();
-  });
-}
-
-    document.addEventListener("keydown", function(e){
-      const key = e.key.toLowerCase();
-
-      if(key === "a") addGoalA();
-      if(key === "l") addGoalB();
-      if(key === "q") removeGoalA();
-      if(key === "m") removeGoalB();
-      if(key === "s") addSetManual();
-      if(key === "t") resetScoresOnly();
-      if(key === "r") resetMatch();
-      if(key === "u") undoLastSet();
-
-      if(key === "1"){
-        const newName = prompt("Nom du joueur A", nameAEl.innerText);
-        if(newName){
-          playerAName = newName;
-          nameAEl.innerText = newName;
-          updateNameColumnWidth();
-        }
-      }
-
-      if(key === "2"){
-        const newName = prompt("Nom du joueur B", nameBEl.innerText);
-        if(newName){
-          playerBName = newName;
-          nameBEl.innerText = newName;
-          updateNameColumnWidth();
-        }
-      }
-
-      if(key === "3"){
-        const newRound = prompt("Tour du match", roundBadgeTextEl.innerText);
-        if(newRound){
-          roundLabel = newRound;
-          roundBadgeTextEl.innerText = newRound;
-        }
-      }
-    });
-
-    initTexts();
-    updateNameColumnWidth();
-    updateScores();
-    updateHistory();
-    updateScoreVisibility();
-    initControlPanel();
-  </script>
-
-
+      </section>
+    </section>
+
+    <footer class="bottom-band">
+      <span>Competition</span>
+      <span>Entrainements</span>
+      <span>Evenements</span>
+      <span>Progression</span>
+    </footer>
+  </main>
 </body>
 </html>
